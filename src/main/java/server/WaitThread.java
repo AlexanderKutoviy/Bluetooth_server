@@ -28,7 +28,9 @@ public class WaitThread implements Runnable {
         // setup the server to listen for connection
         try {
             local = LocalDevice.getLocalDevice();
-            local.setDiscoverable(DiscoveryAgent.GIAC);
+            System.out.println("Address: " + local.getBluetoothAddress());
+            System.out.println("Name: " + local.getFriendlyName());
+//            local.setDiscoverable(DiscoveryAgent.GIAC);
 
             UUID uuid = new UUID(80087355); // "04c6093b-0000-1000-8000-00805f9b34fb"
             String url = "btspp://localhost:" + uuid.toString() + ";name=RemoteBluetooth";
