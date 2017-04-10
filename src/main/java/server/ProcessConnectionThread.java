@@ -1,14 +1,12 @@
 package server;
 
 import javax.microedition.io.StreamConnection;
-import java.awt.Robot;
-import java.awt.event.KeyEvent;
 import java.io.InputStream;
 
 
 public class ProcessConnectionThread implements Runnable {
 
-    private StreamConnection mConnection;
+    private StreamConnection connection;
 
     // Constant that indicate command from devices
     private static final int EXIT_CMD = -1;
@@ -16,14 +14,14 @@ public class ProcessConnectionThread implements Runnable {
     private static final int KEY_LEFT = 2;
 
     public ProcessConnectionThread(StreamConnection connection) {
-        mConnection = connection;
+        this.connection = connection;
     }
 
     @Override
     public void run() {
         try {
             // prepare to receive data
-            InputStream inputStream = mConnection.openInputStream();
+            InputStream inputStream = connection.openInputStream();
             System.out.println("waiting for input");
 
             while (true) {
@@ -53,6 +51,9 @@ public class ProcessConnectionThread implements Runnable {
                     break;
                 case KEY_LEFT:
                     System.out.println("Left");
+                    break;
+                case EXIT_CMD:
+                    System.out.println("Exit");
                     break;
             }
         } catch (Exception e) {

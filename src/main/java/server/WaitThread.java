@@ -1,11 +1,11 @@
 package server;
 
-import javax.bluetooth.DiscoveryAgent;
-import javax.bluetooth.LocalDevice;
+import javax.bluetooth.RemoteDevice;
 import javax.bluetooth.UUID;
 import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
+import java.io.IOException;
 
 public class WaitThread implements Runnable {
 
@@ -14,42 +14,32 @@ public class WaitThread implements Runnable {
 
     @Override
     public void run() {
-        waitForConnection();
+        try {
+            waitForConnection();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * Waiting for connection from devices
      */
-    private void waitForConnection() {
-        // retrieve the local Bluetooth device object
-        LocalDevice local;
-        StreamConnectionNotifier notifier;
-        StreamConnection connection;
-        // setup the server to listen for connection
-        try {
-            local = LocalDevice.getLocalDevice();
-            System.out.println("Address: " + local.getBluetoothAddress());
-            System.out.println("Name: " + local.getFriendlyName());
-//            local.setDiscoverable(DiscoveryAgent.GIAC);
+    private void waitForConnection() throws IOException {
+        //Create a UUID for SPP
+        UUID uuid = new UUID("1101", true);
+        //Create the service url
+        String connectionString = "btspp://localhost:" + uuid + ";name=Sample SPP Server";
+        //open server url
+        StreamConnectionNotifier streamConnNotifier = (StreamConnectionNotifier) Connector.open(connectionString);
+        //Wait for client connection
+        System.out.println("\nServer Started. Waiting for clients to connect...");
+        StreamConnection connection = streamConnNotifier.acceptAndOpen();
 
-            UUID uuid = new UUID(80087355); // "04c6093b-0000-1000-8000-00805f9b34fb"
-            String url = "btspp://localhost:" + uuid.toString() + ";name=RemoteBluetooth";
-            notifier = (StreamConnectionNotifier) Connector.open(url);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        // waiting for connection
-        while (true) {
-            try {
-                System.out.println("waiting for connection...");
-                connection = notifier.acceptAndOpen();
-                Thread processThread = new Thread(new ProcessConnectionThread(connection));
-                processThread.start();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
-        }
+        RemoteDevice dev = RemoteDevice.getRemoteDevice(connection);
+        System.out.println("Remote device address: " + dev.getBluetoothAddress());
+        System.out.println("Remote device name: " + dev.getFriendlyName(true));
+        
+        Thread processThread = new Thread(new ProcessConnectionThread(connection));
+        processThread.start();
     }
 }
