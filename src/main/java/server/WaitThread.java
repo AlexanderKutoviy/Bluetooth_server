@@ -26,7 +26,8 @@ public class WaitThread implements Runnable {
      */
     private void waitForConnection() throws IOException {
         //Create a UUID for SPP
-        UUID uuid = new UUID("1101", true);
+//        UUID uuid = new UUID("1101", true);
+        UUID uuid = new UUID("446118f08b1e11e29e960800200c9a66", false);
         //Create the service url
         String connectionString = "btspp://localhost:" + uuid + ";name=Sample SPP Server";
         //open server url
@@ -38,7 +39,7 @@ public class WaitThread implements Runnable {
         RemoteDevice dev = RemoteDevice.getRemoteDevice(connection);
         System.out.println("Remote device address: " + dev.getBluetoothAddress());
         System.out.println("Remote device name: " + dev.getFriendlyName(true));
-        
+
         Thread processThread = new Thread(new ProcessConnectionThread(connection));
         processThread.start();
     }

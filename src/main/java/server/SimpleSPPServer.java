@@ -10,6 +10,7 @@ public class SimpleSPPServer {
     private void startServer() throws IOException {
         //Create a UUID for SPP
         UUID uuid = new UUID("1101", true);
+        System.out.println(uuid.toString());
         //Create the service url
         String connectionString = "btspp://localhost:" + uuid + ";name=Sample SPP Server";
         //open server url
